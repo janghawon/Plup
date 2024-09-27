@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class BlockButton : Button
+public class GoalButton : WindowEdditorButton
 {
-    
+    protected override void ClickEvent()
+    {
+    }
 }

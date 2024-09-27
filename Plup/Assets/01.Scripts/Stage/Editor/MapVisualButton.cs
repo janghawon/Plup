@@ -4,5 +4,7 @@ using UnityEngine;
 
 public class MapVisualButton : PressChangeButton
 {
-    
+    protected override void ClickEvent()
+    {
+    }
 }
