@@ -53,7 +53,7 @@ public class StageEditor : EditorWindow
 
             var button = Activator.CreateInstance(type) as WindowEdditorButton;
             button.SetupButton(buttonType);
-            button.ClickEvent += clickEventDic[buttonType];
+            button.ClickEvent += () => CallbackManager.Instance.Callback(buttonType.ToString());
 
             _stageEditorButtonList.Add(button);
 

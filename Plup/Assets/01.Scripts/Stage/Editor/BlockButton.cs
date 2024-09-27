@@ -5,7 +5,5 @@ using UnityEngine.UIElements;
 
 public class BlockButton : WindowEdditorButton
 {
-    protected override void ClickEvent()
-    {
-    }
+    
 }

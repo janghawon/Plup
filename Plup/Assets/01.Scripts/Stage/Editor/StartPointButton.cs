@@ -5,7 +5,5 @@ using UnityEngine.UIElements;
 
 public class StartPointButton : WindowEdditorButton
 {
-    protected override void ClickEvent()
-    {
-    }
+    
 }

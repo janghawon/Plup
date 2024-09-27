@@ -10,10 +10,9 @@ public abstract class PressChangeButton : WindowEdditorButton
     protected string[] _texturePathArr;
     protected int _clickCount = 0;
 
-    public override void SetupButton(StageEditorButtonType type, StageData data)
+    public override void SetupButton(StageEditorButtonType type)
     {
-        base.SetupButton(type, data);
-
+        base.SetupButton(type);
         RegisterCallback<ClickEvent>(HandlePressThisButton);
     }
 
@@ -30,11 +29,6 @@ public abstract class PressChangeButton : WindowEdditorButton
 
             ChangeVisual();
         }
-    }
-
-    protected override void ClickEvent()
-    {
-        base.ClickEvent();
     }
 
     protected virtual void ChangeVisual()
