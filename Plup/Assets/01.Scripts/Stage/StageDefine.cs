@@ -8,6 +8,12 @@ namespace StageDefine
         Refresh
     }
 
+    public enum ObstacleType
+    {
+        Obstacle_ON,
+        Obstacle_Off,
+    }
+
     public enum MapVisualType
     {
         Normal,
@@ -24,7 +30,8 @@ namespace StageDefine
         Planks,
         Water,
         Obstacle_ON,
-        Obsracle_Off
+        Obsracle_Off,
+        Block
     }
 
     public enum StageEditorButtonType

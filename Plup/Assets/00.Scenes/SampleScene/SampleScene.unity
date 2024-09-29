@@ -1062,7 +1062,7 @@ MonoBehaviour:
     m_DissipationMode: 2
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0.011368, y: 0.01931588, z: 0.002605226}
+  m_DefaultVelocity: {x: 0.01615461, y: 0.01348227, z: 0.002576742}
 --- !u!114 &1599038254
 MonoBehaviour:
   m_ObjectHideFlags: 0

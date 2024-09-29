@@ -23,6 +23,7 @@ public class MapVisualButton : PressChangeButton
     private int _blockCountInPage;
     private int _allPageCount;
     private int _currentPageCount = 1;
+    private int _countOfBlockInCurrentPage;
 
     public override void SetupButton(StageEditorButtonType type, VisualElement root, StageData data)
     {
@@ -42,9 +43,9 @@ public class MapVisualButton : PressChangeButton
         _mapVisualEditRoot.name = "map-visual-edit-root";
         _root.Add(_mapVisualEditRoot);
 
-        _editorWidthChangeEvent += GeneratePageShame;
-        _editorWidthChangeEvent += DrawPage;
         _editorWidthChangeEvent += DrawMapVisualEditorUI;
+        _editorWidthChangeEvent += GeneratePageShame;
+        _editorWidthChangeEvent += ReDrawPage;
     }
 
     private void DrawMapVisualEditorUI()
@@ -105,19 +106,29 @@ public class MapVisualButton : PressChangeButton
         float blockLength = 3 * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval);
 
         _blockCountInPage = Mathf.FloorToInt(Editor_width / blockLength);
-        _allPageCount = Mathf.FloorToInt((blockLength + totalBlockCount - 1) / totalBlockCount);
+        _allPageCount = Mathf.Clamp(Mathf.CeilToInt((totalBlockCount * blockLength) / Editor_width), 1, int.MaxValue);
+
+        _current_page_label.text = $"{_currentPageCount} / {_allPageCount}";
     }
 
     private void HandleGoLeftPage()
     {
-        if (_currentPageCount - 1 <= 0) return;
+        if (_currentPageCount - 1 < 1) return;
 
-        
+        _currentPageCount--;
+
+        GeneratePageShame();
+        ReDrawPage();
     }
 
     private void HandleGoRightPage()
     {
-        if (_currentPageCount + 1 >= _allPageCount) return;
+        if (_currentPageCount + 1 > _allPageCount) return;
+
+        _currentPageCount++;
+
+        GeneratePageShame();
+        ReDrawPage();
     }
 
     protected override void HandleClickThisButton()
@@ -127,18 +138,29 @@ public class MapVisualButton : PressChangeButton
 
         _inEditingData.AddStageBlock(blockType);
         _inEditingData.AddStageTileElement(data);
+
+        GeneratePageShame();
+
+        if (_countOfBlockInCurrentPage >= _blockCountInPage) return;
+
+        ReDrawPage();
     }
 
-    public void DrawPage()
+    public void ReDrawPage()
     {
         _mapVisualRoot.Clear();
 
         int totalBlock = (_currentPageCount - 1) * _blockCountInPage;
         int blockCountInCurPage = _inEditingData.StageBlockCount - totalBlock;
 
+        _countOfBlockInCurrentPage = 0;
+
         for (int i = 0; i < blockCountInCurPage; i++)
         {
+            if (_countOfBlockInCurrentPage >= _blockCountInPage) break;
+
             DrawMapTile(_inEditingData.GetStageTileElementByIndex(totalBlock + i), i);
+            _countOfBlockInCurrentPage++;
         }
     }
 
