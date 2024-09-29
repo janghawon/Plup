@@ -10,8 +10,19 @@ using UnityEngine.UIElements;
 
 public class MapVisualButton : PressChangeButton
 {
+    [Header("MapVisual Block")]
     private VisualElement _mapVisualRoot;
     private const string _mapTileTexturePath = "EditorButtonVisual/StageTile";
+
+    [Header("MapVisual Editor UI")]
+    private VisualElement _mapVisualEditRoot;
+    private Button _go_left_page_btn;
+    private Button _go_right_page_btn;
+    private Label _current_page_label;
+
+    private int _blockCountInPage;
+    private int _allPageCount;
+    private int _currentPageCount = 1;
 
     public override void SetupButton(StageEditorButtonType type, VisualElement root, StageData data)
     {
@@ -24,7 +35,89 @@ public class MapVisualButton : PressChangeButton
         base.SetupButton(type, root, data);
 
         _mapVisualRoot = new VisualElement();
+        _mapVisualRoot.name = "map-visual-root";
         _root.Add(_mapVisualRoot);
+
+        _mapVisualEditRoot = new VisualElement();
+        _mapVisualEditRoot.name = "map-visual-edit-root";
+        _root.Add(_mapVisualEditRoot);
+
+        _editorWidthChangeEvent += GeneratePageShame;
+        _editorWidthChangeEvent += DrawPage;
+        _editorWidthChangeEvent += DrawMapVisualEditorUI;
+    }
+
+    private void DrawMapVisualEditorUI()
+    {
+        _mapVisualEditRoot.Clear();
+
+        _go_left_page_btn = new Button(HandleGoLeftPage);
+        _go_right_page_btn = new Button(HandleGoRightPage);
+        _current_page_label = new Label("1 / 1");
+
+        #region Button & Label Generate
+        _go_left_page_btn.style.position = Position.Absolute;
+        _go_left_page_btn.style.width = StageStandard.mapTile_Page_Go_Btn_Length;
+        _go_left_page_btn.style.height = StageStandard.mapTile_Page_Go_Btn_Length;
+        _go_left_page_btn.style.backgroundImage =
+        Background.FromTexture2D(Resources.Load<Texture2D>("EditorButtonVisual/EditorUI/Left-Arrow-Button"));
+
+        _go_left_page_btn.transform.position =
+        new Vector2
+        (
+            Editor_width - ((StageStandard.mapTile_Page_Go_Btn_Length * 2) + StageStandard.mapTile_Page_Label_Length + (4 * StageStandard.mapTile_Editor_Ui_Interval)),
+            (StageStandard.editorBtn_Interval * 2) + StageStandard.editorBtn_Length - StageStandard.mapTile_Page_Go_Btn_Length - StageStandard.mapTile_Editor_Ui_Interval
+        );
+        _go_right_page_btn.style.position = Position.Absolute;
+        _go_right_page_btn.style.width = StageStandard.mapTile_Page_Go_Btn_Length;
+        _go_right_page_btn.style.height = StageStandard.mapTile_Page_Go_Btn_Length;
+        _go_right_page_btn.style.backgroundImage =
+        Background.FromTexture2D(Resources.Load<Texture2D>("EditorButtonVisual/EditorUI/Right-Arrow-Button"));
+
+        _go_right_page_btn.transform.position =
+        new Vector2
+        (
+            Editor_width - (StageStandard.mapTile_Editor_Ui_Interval + (StageStandard.mapTile_Page_Go_Btn_Length)),
+            (StageStandard.editorBtn_Interval * 2) + StageStandard.editorBtn_Length - StageStandard.mapTile_Page_Go_Btn_Length - StageStandard.mapTile_Editor_Ui_Interval
+        );
+
+        _current_page_label.style.position = Position.Absolute;
+        _current_page_label.style.width = StageStandard.mapTile_Page_Label_Length;
+        _current_page_label.style.height = StageStandard.mapTile_Page_Go_Btn_Length;
+        _current_page_label.style.unityTextAlign = TextAnchor.MiddleCenter;
+
+        _current_page_label.transform.position =
+        new Vector2
+        (
+            Editor_width - (StageStandard.mapTile_Page_Go_Btn_Length + (2 * StageStandard.mapTile_Editor_Ui_Interval) + (StageStandard.mapTile_Page_Label_Length)),
+            (StageStandard.editorBtn_Interval * 2) + StageStandard.editorBtn_Length - StageStandard.mapTile_Page_Go_Btn_Length - StageStandard.mapTile_Editor_Ui_Interval
+        );
+        #endregion
+
+        _mapVisualEditRoot.Add(_go_left_page_btn);
+        _mapVisualEditRoot.Add(_go_right_page_btn);
+        _mapVisualEditRoot.Add(_current_page_label);
+    }
+
+    private void GeneratePageShame()
+    {
+        int totalBlockCount = _inEditingData.StageBlockCount;
+        float blockLength = 3 * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval);
+
+        _blockCountInPage = Mathf.FloorToInt(Editor_width / blockLength);
+        _allPageCount = Mathf.FloorToInt((blockLength + totalBlockCount - 1) / totalBlockCount);
+    }
+
+    private void HandleGoLeftPage()
+    {
+        if (_currentPageCount - 1 <= 0) return;
+
+        
+    }
+
+    private void HandleGoRightPage()
+    {
+        if (_currentPageCount + 1 >= _allPageCount) return;
     }
 
     protected override void HandleClickThisButton()
@@ -32,19 +125,34 @@ public class MapVisualButton : PressChangeButton
         MapVisualType blockType = (MapVisualType)_clickCount;
         StageTileElement[,] data = GetMapVisualDataForType(blockType);
 
-        int blockCnt = _inEditingData.StageBlockCount;
-        Debug.Log($"{(blockCnt * (StageStandard.mapTile_Length)) + ((blockCnt + 2) * (StageStandard.mapTile_Interval))}, {editor_width}");
-        if ((blockCnt * (StageStandard.mapTile_Length)) + ((blockCnt + 2) * (StageStandard.mapTile_Interval)) > editor_width) return;
+        _inEditingData.AddStageBlock(blockType);
+        _inEditingData.AddStageTileElement(data);
+    }
 
+    public void DrawPage()
+    {
+        _mapVisualRoot.Clear();
+
+        int totalBlock = (_currentPageCount - 1) * _blockCountInPage;
+        int blockCountInCurPage = _inEditingData.StageBlockCount - totalBlock;
+
+        for (int i = 0; i < blockCountInCurPage; i++)
+        {
+            DrawMapTile(_inEditingData.GetStageTileElementByIndex(totalBlock + i), i);
+        }
+    }
+
+    public void DrawMapTile(StageTileElement[,] data, int inPangeBlockIndex)
+    {
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
                 string path;
 
-                if (data[i,j] == StageTileElement.NormalTile)
+                if (data[i, j] == StageTileElement.NormalTile)
                 {
-                    path = $"{_mapTileTexturePath}/{data[i,j]}_{(j + i) % 2}";
+                    path = $"{_mapTileTexturePath}/{data[i, j]}_{(j + i) % 2}";
                 }
                 else
                 {
@@ -61,20 +169,17 @@ public class MapVisualButton : PressChangeButton
 
                 tileEle.style.backgroundImage = visual;
 
-                float xPos = StageStandard.mapTile_Interval + 
-                             j * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval) + 
-                             (blockCnt * 3 * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval));
+                float xPos = StageStandard.mapTile_Interval +
+                             j * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval) +
+                             (inPangeBlockIndex * 3 * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval));
 
-                float yPos = (10 * 2) + 100 + (i * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval));
+                float yPos = (StageStandard.editorBtn_Interval * 2) + StageStandard.editorBtn_Length + (i * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval));
 
                 tileEle.transform.position = new Vector2(xPos, yPos);
 
                 _mapVisualRoot.Add(tileEle);
             }
         }
-
-        _inEditingData.AddStageBlock(blockType);
-        _inEditingData.AddStageTileElement(data);
     }
 
     private StageTileElement[,] GetMapVisualDataForType(MapVisualType type)

@@ -39,12 +39,12 @@ public class StageData : ScriptableObject
         _stageTileDatabase.RemoveAt(index);
     }
 
-    public StageTileElement[,] GetLastStageBlock()
+    public StageTileElement[,] GetLastStageTileElement()
     {
         return _stageTileDatabase[_stageTileDatabase.Count - 1];
     }
 
-    public StageTileElement[,] GetStageBlockByIndex(int index)
+    public StageTileElement[,] GetStageTileElementByIndex(int index)
     {
         return _stageTileDatabase[index];
     }

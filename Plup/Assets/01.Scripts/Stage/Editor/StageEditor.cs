@@ -45,9 +45,8 @@ public class StageEditor : EditorWindow
 
     private void OnEnable()
     {
-        InitializeEditorButton();
-
         _lastWindow_Length = position.size.x;
+        InitializeEditorButton();
     }
 
     private void OnGUI()
@@ -62,7 +61,7 @@ public class StageEditor : EditorWindow
 
             foreach (var button in _stageEditorButtonList)
             {
-                button.editor_width = _currentWindow_Length;
+                button.Editor_width = _currentWindow_Length;
             }
         }
     }
@@ -84,6 +83,7 @@ public class StageEditor : EditorWindow
             }
 
             var button = Activator.CreateInstance(type) as WindowEditorButton;
+            button.Editor_width = _lastWindow_Length;
             button.SetupButton(buttonType, rootVisualElement, _inEditingData);
 
             _stageEditorButtonList.Add(button);

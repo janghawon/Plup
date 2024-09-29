@@ -7,7 +7,21 @@ using UnityEngine.UIElements;
 
 public abstract class WindowEditorButton : Button
 {
-    public float editor_width;
+    protected event Action _editorWidthChangeEvent;
+
+    private float _editor_width;
+    public float Editor_width
+    {
+        get
+        {
+            return _editor_width;
+        }
+        set
+        {
+            _editor_width = value;
+            _editorWidthChangeEvent?.Invoke();
+        }
+    }
     protected VisualElement _root;
     protected StageData _inEditingData;
 
