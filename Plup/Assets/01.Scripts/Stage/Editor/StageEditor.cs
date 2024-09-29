@@ -8,38 +8,70 @@ using System;
 
 public class StageEditor : EditorWindow
 {
-    [Header("SettingValue")]
-    private float _editorBtn_Length = 100.0f;
-    private float _editorBtn_Interval = 10.0f;
+    private float _lastWindow_Length;
 
     private static StageData _inEditingData;
-    private List<WindowEdditorButton> _stageEditorButtonList = new();
+    private List<WindowEditorButton> _stageEditorButtonList = new();
 
     [MenuItem("Window/StageEditor")]
     public static void OpenWindow()
     {
-        _inEditingData = default(StageData);
+        _inEditingData = ScriptableObject.CreateInstance<StageData>();
+        AssetDatabase.CreateAsset(_inEditingData, $"Assets/03.SO/StageData/UnknownStage.asset");
+        AssetDatabase.SaveAssets();
+        EditorUtility.SetDirty(_inEditingData);
+
         CreateWindow<StageEditor>();
+    }
+
+    private static void OpenWindow(StageData data)
+    {
+        _inEditingData = data;
+        CreateWindow<StageEditor>();
+    }
+
+    public static bool OpenAtSo(int instanceID, int line)
+    {
+        StageData data = EditorUtility.InstanceIDToObject(instanceID) as StageData;
+
+        if (data != null)
+        {
+            OpenWindow(data);
+            return true;
+        }
+
+        return false;
     }
 
     private void OnEnable()
     {
-        Dictionary<StageEditorButtonType, Action> clickEventDic = new();
-        clickEventDic.Add(StageEditorButtonType.MapVisual, CreateMapVisual);
+        InitializeEditorButton();
 
-        InitializeEditorButton(clickEventDic);
+        _lastWindow_Length = position.size.x;
     }
 
     private void OnGUI()
     {
         GenerateEditorButton();
+
+        float _currentWindow_Length = position.size.x;
+
+        if(_lastWindow_Length != _currentWindow_Length)
+        {
+            _lastWindow_Length = _currentWindow_Length;
+
+            foreach (var button in _stageEditorButtonList)
+            {
+                button.editor_width = _currentWindow_Length;
+            }
+        }
     }
 
     #region EditorButton
     /// <summary>
     /// 에디터 버튼 생성 및 위치 정형화 코드 
     /// </summary>
-    private void InitializeEditorButton(Dictionary<StageEditorButtonType, Action> clickEventDic)
+    private void InitializeEditorButton()
     {
         foreach (StageEditorButtonType buttonType in Enum.GetValues(typeof(StageEditorButtonType)))
         {
@@ -51,12 +83,10 @@ public class StageEditor : EditorWindow
                 continue;
             }
 
-            var button = Activator.CreateInstance(type) as WindowEdditorButton;
-            button.SetupButton(buttonType);
-            button.ClickEvent += () => CallbackManager.Instance.Callback(buttonType.ToString());
+            var button = Activator.CreateInstance(type) as WindowEditorButton;
+            button.SetupButton(buttonType, rootVisualElement, _inEditingData);
 
             _stageEditorButtonList.Add(button);
-
             rootVisualElement.Add(button);
         }
     }
@@ -64,24 +94,17 @@ public class StageEditor : EditorWindow
     {
         for (int i = 0; i < _stageEditorButtonList.Count; i++)
         {
-            WindowEdditorButton button = _stageEditorButtonList[i];
+            WindowEditorButton button = _stageEditorButtonList[i];
 
             button.style.position = Position.Absolute;
-            button.style.width = _editorBtn_Length;
-            button.style.height = _editorBtn_Length;
+            button.style.width = StageStandard.editorBtn_Length;
+            button.style.height = StageStandard.editorBtn_Length;
 
-            float xPos = _editorBtn_Interval + i * (_editorBtn_Length + _editorBtn_Interval);
-            float yPos = _editorBtn_Interval;
+            float xPos = StageStandard.editorBtn_Interval + i * (StageStandard.editorBtn_Length + StageStandard.editorBtn_Interval);
+            float yPos = StageStandard.editorBtn_Interval;
 
             button.transform.position = new Vector2(xPos, yPos);
         }
-    }
-    #endregion
-
-    #region MapVisual
-    private void CreateMapVisual()
-    {
-
     }
     #endregion
 }

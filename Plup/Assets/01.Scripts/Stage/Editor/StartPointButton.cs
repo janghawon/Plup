@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class StartPointButton : WindowEdditorButton
+public class StartPointButton : WindowEditorButton
 {
-    
+    protected override void HandleClickThisButton()
+    {
+    }
 }

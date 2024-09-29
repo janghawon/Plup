@@ -5,18 +5,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public abstract class PressChangeButton : WindowEdditorButton
+public abstract class PressChangeButton : WindowEditorButton
 {
     protected string[] _texturePathArr;
     protected int _clickCount = 0;
 
-    public override void SetupButton(StageEditorButtonType type)
+    public override void SetupButton(StageEditorButtonType type, VisualElement root, StageData data)
     {
-        base.SetupButton(type);
-        RegisterCallback<ClickEvent>(HandlePressThisButton);
+        base.SetupButton(type, root, data);
+        RegisterCallback<PointerDownEvent>(HandlePressThisButton);
     }
 
-    private void HandlePressThisButton(ClickEvent evt)
+    private void HandlePressThisButton(PointerDownEvent evt)
     {
         if(evt.button == 1)
         {
@@ -31,8 +31,8 @@ public abstract class PressChangeButton : WindowEdditorButton
         }
     }
 
-    protected virtual void ChangeVisual()
-    {
+    private void ChangeVisual()
+    { 
         style.backgroundImage =
         Background.FromTexture2D(Resources.Load<Texture2D>(_texturePathArr[_clickCount]));
     }
