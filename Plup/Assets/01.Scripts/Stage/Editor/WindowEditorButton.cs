@@ -2,6 +2,7 @@ using StageDefine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,7 @@ public abstract class WindowEditorButton : Button
             _editorWidthChangeEvent?.Invoke();
         }
     }
+    public StageEditor editor;
     protected VisualElement _root;
     protected StageData _inEditingData;
 
@@ -40,9 +42,13 @@ public abstract class WindowEditorButton : Button
     {
         if(e.button == 0)
         {
-            HandleClickThisButton();
+            editor.editorClickEvent = null;
+            HandleClickThisButton(e);
+
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(_inEditingData);
         }
     }
 
-    protected abstract void HandleClickThisButton();
+    protected abstract void HandleClickThisButton(ClickEvent evt);
 }

@@ -22,18 +22,14 @@ public abstract class PressChangeButton : WindowEditorButton
         {
             _clickCount++;
 
-            if(_clickCount == _texturePathArr.Length)
-            {
-                _clickCount = 0;
-            }
-
             ChangeVisual();
         }
     }
 
     private void ChangeVisual()
-    { 
+    {
+        int idx = _clickCount % _texturePathArr.Length;
         style.backgroundImage =
-        Background.FromTexture2D(Resources.Load<Texture2D>(_texturePathArr[_clickCount]));
+        Background.FromTexture2D(Resources.Load<Texture2D>(_texturePathArr[idx]));
     }
 }

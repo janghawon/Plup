@@ -48,4 +48,9 @@ public class StageData : ScriptableObject
     {
         return _stageTileDatabase[index];
     }
+
+    public void ReplacceStageTileElement(int targetIdx, StageTileElement[,] element)
+    {
+        _stageTileDatabase[targetIdx] = element;
+    }
 }

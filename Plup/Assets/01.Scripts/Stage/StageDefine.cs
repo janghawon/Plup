@@ -21,17 +21,18 @@ namespace StageDefine
         Planks,
         Torch,
         Well,
-        Goal
     }
-
+    
     public enum StageTileElement
     {
         NormalTile,
         Planks,
         Water,
         Obstacle_ON,
-        Obsracle_Off,
-        Block
+        Obstacle_Off,
+        Block,
+        StartPoint,
+        Goal
     }
 
     public enum StageEditorButtonType

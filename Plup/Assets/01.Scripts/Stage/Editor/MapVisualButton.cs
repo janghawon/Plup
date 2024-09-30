@@ -131,7 +131,7 @@ public class MapVisualButton : PressChangeButton
         ReDrawPage();
     }
 
-    protected override void HandleClickThisButton()
+    protected override void HandleClickThisButton(ClickEvent evt)
     {
         MapVisualType blockType = (MapVisualType)_clickCount;
         StageTileElement[,] data = GetMapVisualDataForType(blockType);
@@ -198,7 +198,7 @@ public class MapVisualButton : PressChangeButton
                 float yPos = (StageStandard.editorBtn_Interval * 2) + StageStandard.editorBtn_Length + (i * (StageStandard.mapTile_Length + StageStandard.mapTile_Interval));
 
                 tileEle.transform.position = new Vector2(xPos, yPos);
-                tileEle.name = $"{_inEditingData.StageBlockCount}-{i}-{j}";
+                tileEle.name = $"{_inEditingData.StageBlockCount - 1}-{i}-{j}";
                 _mapVisualRoot.Add(tileEle);
             }
         }

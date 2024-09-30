@@ -13,6 +13,8 @@ public class StageEditor : EditorWindow
     private static StageData _inEditingData;
     private List<WindowEditorButton> _stageEditorButtonList = new();
 
+    public Action<MouseDownEvent> editorClickEvent;
+
     [MenuItem("Window/StageEditor")]
     public static void OpenWindow()
     {
@@ -47,6 +49,21 @@ public class StageEditor : EditorWindow
     {
         _lastWindow_Length = position.size.x;
         InitializeEditorButton();
+
+        rootVisualElement.RegisterCallback<MouseDownEvent>(CallToClickEvent);
+    }
+
+    private void OnDisable()
+    {
+        rootVisualElement.UnregisterCallback<MouseDownEvent>(CallToClickEvent);
+    }
+
+    private void CallToClickEvent(MouseDownEvent evt)
+    {
+        if(evt.button == 0)
+        {
+            editorClickEvent?.Invoke(evt);
+        }
     }
 
     private void OnGUI()
@@ -83,6 +100,7 @@ public class StageEditor : EditorWindow
             }
 
             var button = Activator.CreateInstance(type) as WindowEditorButton;
+            button.editor = this;
             button.Editor_width = _lastWindow_Length;
             button.SetupButton(buttonType, rootVisualElement, _inEditingData);
 
