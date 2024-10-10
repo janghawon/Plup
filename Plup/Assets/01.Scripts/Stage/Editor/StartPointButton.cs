@@ -23,7 +23,7 @@ public class StartPointButton : WindowEditorButton
 
         int[] nums = arr.Select(i => Convert.ToInt32(i)).ToArray();
 
-        StageTileElement[,] newTile = _inEditingData.GetStageTileElementByIndex(nums[0]);
+        Serializable2DArray<StageTileElement> newTile = _inEditingData.GetStageTileElementByIndex(nums[0]);
         StageTileElement toChangeTile = StageTileElement.StartPoint;
         newTile[nums[1], nums[2]] = toChangeTile;
         _inEditingData.ReplacceStageTileElement(nums[0], newTile);

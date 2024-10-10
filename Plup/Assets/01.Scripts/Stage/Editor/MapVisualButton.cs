@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -138,6 +139,7 @@ public class MapVisualButton : PressChangeButton
 
         _inEditingData.AddStageBlock(blockType);
         _inEditingData.AddStageTileElement(data);
+        EditorUtility.SetDirty(_inEditingData);
 
         GeneratePageShame();
 
@@ -164,7 +166,7 @@ public class MapVisualButton : PressChangeButton
         }
     }
 
-    public void DrawMapTile(StageTileElement[,] data, int inPangeBlockIndex)
+    public void DrawMapTile(Serializable2DArray<StageTileElement> data, int inPangeBlockIndex)
     {
         for (int i = 0; i < 3; i++)
         {

@@ -14,4 +14,17 @@ public static class StageStandard
     public const float mapTile_Page_Go_Btn_Length = 20.0f;
     public const float mapTile_Page_Label_Length = 40.0f;
     public const float mapTile_Editor_Ui_Interval = 5.0f;
+
+    [Header("StageData Editor")]
+    public const float stageData_Btn_Width = 100.0f;
+    public const float stageData_Btn_Height = 40.0f;
+    public const float stageData_Btn_interval = 10.0f;
+
+    public const float stageData_TextField_Width = 200.0f;
+    public const float stageData_TextField_Height = 20.0f;
+    public const float stageData_TextField_Interval = 10.0f;
+
+    public const float stageData_SaveBtn_Width = 100.0f;
+    public const float stageData_SaveBtn_Height = 20.0f;
+    public const float stageData_SaveBtn_Interval = 10.0f;
 }

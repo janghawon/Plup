@@ -5,6 +5,7 @@ using UnityEngine;
 using StageDefine;
 using UnityEngine.UIElements;
 using System;
+using UnityEditor.Callbacks;
 
 public class StageEditor : EditorWindow
 {
@@ -12,6 +13,8 @@ public class StageEditor : EditorWindow
 
     private static StageData _inEditingData;
     private List<WindowEditorButton> _stageEditorButtonList = new();
+    private TextField _stageNameInput;
+    private Button _stageDataSaveBtn;
 
     public Action<MouseDownEvent> editorClickEvent;
 
@@ -32,23 +35,12 @@ public class StageEditor : EditorWindow
         CreateWindow<StageEditor>();
     }
 
-    public static bool OpenAtSo(int instanceID, int line)
-    {
-        StageData data = EditorUtility.InstanceIDToObject(instanceID) as StageData;
-
-        if (data != null)
-        {
-            OpenWindow(data);
-            return true;
-        }
-
-        return false;
-    }
-
     private void OnEnable()
     {
         _lastWindow_Length = position.size.x;
         InitializeEditorButton();
+        InitializeEditorTextField();
+        InitializeDataSaveButton();
 
         rootVisualElement.RegisterCallback<MouseDownEvent>(CallToClickEvent);
     }
@@ -80,8 +72,62 @@ public class StageEditor : EditorWindow
             {
                 button.Editor_width = _currentWindow_Length;
             }
+
+            ReGenerateTextFieldPosition();
+            ReGenerateDataSaveButtonPosition();
         }
     }
+
+    #region EditorSaveButton
+    /// <summary>
+    /// 데이터 저장 버튼 생성 및 위치 정형화 코드
+    /// </summary>
+    private void InitializeDataSaveButton()
+    {
+        _stageDataSaveBtn = new Button(HandleSaveData);
+        _stageDataSaveBtn.text = "저장";
+        _stageDataSaveBtn.style.width = StageStandard.stageData_SaveBtn_Width;
+        _stageDataSaveBtn.style.height = StageStandard.stageData_SaveBtn_Height;
+
+        rootVisualElement.Add(_stageDataSaveBtn);
+    }
+
+    private void HandleSaveData()
+    {
+        string path = AssetDatabase.GetAssetPath(_inEditingData);
+        AssetDatabase.RenameAsset(path, _stageNameInput.text);
+        AssetDatabase.SaveAssets();
+        EditorUtility.SetDirty(_inEditingData);
+    }
+
+    private void ReGenerateDataSaveButtonPosition()
+    {
+        _stageDataSaveBtn.transform.position =
+        new Vector2(position.size.x - StageStandard.stageData_SaveBtn_Width - StageStandard.stageData_SaveBtn_Interval,
+                    StageStandard.stageData_TextField_Interval + StageStandard.stageData_SaveBtn_Interval + StageStandard.stageData_TextField_Height);
+    }
+    #endregion
+
+    #region EditorTextField
+    /// <summary>
+    /// 에디터 텍스트 필드 생성 및 위치 정형화 코드
+    /// 
+    private void InitializeEditorTextField()
+    {
+        _stageNameInput = new TextField("스테이지 이름");
+        _stageNameInput.style.width = StageStandard.stageData_TextField_Width;
+        _stageNameInput.style.height = StageStandard.stageData_TextField_Height;
+        _stageNameInput.style.position = Position.Absolute;
+        _stageNameInput.labelElement.style.minWidth = 10;
+
+        rootVisualElement.Add(_stageNameInput);
+    }
+    private void ReGenerateTextFieldPosition()
+    {
+        _stageNameInput.transform.position = 
+        new Vector2(position.size.x - StageStandard.stageData_TextField_Width - StageStandard.stageData_TextField_Interval, StageStandard.stageData_TextField_Interval);
+    }
+    #endregion
 
     #region EditorButton
     /// <summary>

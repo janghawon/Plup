@@ -8,7 +8,8 @@ public class StageData : ScriptableObject
     private List<MapVisualType> _stageBlockDatabase = new();
     public int StageBlockCount => _stageBlockDatabase.Count;
 
-    private List<StageTileElement[,]> _stageTileDatabase = new();
+    private List<Serializable2DArray<StageTileElement>> _stageTileDatabase = new();
+    public int StageTileCount => _stageTileDatabase.Count;
 
     public void AddStageBlock(MapVisualType type)
     {
@@ -22,7 +23,9 @@ public class StageData : ScriptableObject
             Debug.LogError("Array size is escape in max size");
         }
 
-        _stageTileDatabase.Add(element);
+        Serializable2DArray<StageTileElement> arr = new(element);
+
+        _stageTileDatabase.Add(arr);
     }
 
     public void RemoveStageBlock(int index = -1)
@@ -39,17 +42,17 @@ public class StageData : ScriptableObject
         _stageTileDatabase.RemoveAt(index);
     }
 
-    public StageTileElement[,] GetLastStageTileElement()
+    public MapVisualType GetMapVisualInfoByIndex(int index)
     {
-        return _stageTileDatabase[_stageTileDatabase.Count - 1];
+        return _stageBlockDatabase[index];
     }
 
-    public StageTileElement[,] GetStageTileElementByIndex(int index)
+    public Serializable2DArray<StageTileElement> GetStageTileElementByIndex(int index)
     {
         return _stageTileDatabase[index];
     }
 
-    public void ReplacceStageTileElement(int targetIdx, StageTileElement[,] element)
+    public void ReplacceStageTileElement(int targetIdx, Serializable2DArray<StageTileElement> element)
     {
         _stageTileDatabase[targetIdx] = element;
     }
